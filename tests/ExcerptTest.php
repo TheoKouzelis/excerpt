@@ -30,43 +30,49 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function excerptAndLimitProvider()
+    public function limitCharsProvider()
     {
         return array(
-            array("", "", 0),
-            array("No limit", "No limit", 0),
-            array("No limit", "No limit", "0"),
-            array("L", "Limit to 1 Character", 1),
-            array("L", "Limit to 1 Character", "1"),
-            array("Limit exceeds text", "Limit exceeds text", 100),
-        );
-    }
-    
-    public function excerptEndingAndLimitProvider()
-    {
-        return array(
+            array("", "", "", 0),
+            array("No limit", "No limit", "", 0),
+            array("No limit", "No limit", "", "0"),
             array("No limit", "No limit", "...", 0),
-            array("Limit exceeds text", "Limit exceeds text", "...", 100),
+            array("L", "Limit to 1 Character", "", 1),
+            array("L", "Limit to 1 Character", "", "1"),
             array("L...", "Limit to 1 Character", "...", 1),
+            array("Limit exceeds text", "Limit exceeds text", "...", 100),
             array("Limit...", "Limit ends on white space also remove", "...", 6),
+            array("Limit a...", "   Limit    and    ignore multiple white space   ", "...", 7),
         );
     }
 
-    public function assertTextLimited($to, $from, $limit)
+    public function limitWordProvider()
     {
-        $this->excerpt->setLimit($limit);
-        $limited = $this->excerpt->limit($from);
-        $this->assertInternalType('string', $limited);
-        $this->assertEquals($to, $limited);
+        return array(
+            array("", "", "", 0),
+            array("No word limit", "No word limit", "...", 0),
+            array("Limit exceeds text", "Limit exceeds text", "...", 100),
+            array("Limit two...", "Limit two words", "...", 2),
+            array("Limit and...", "   Limit    and    ignore multiple white space   ", "...", 2),
+        );
     }
 
     /**
      * @dataProvider notAStringProvider
      * @expectedException InvalidArgumentException
      */
-    public function testLimitThrowsExecptionWhenArgIsNotString($notAString)
+    public function testLimitCharsThrowsExecptionWhenArgIsNotString($notAString)
     {
-        $this->excerpt->limit($notAString);
+        $this->excerpt->limitChars($notAString);
+    }
+
+    /**
+     * @dataProvider notAStringProvider
+     * @expectedException InvalidArgumentException
+     */
+    public function testLimitWordsThrowsExecptionWhenArgIsNotString($notAString)
+    {
+        $this->excerpt->limitWords($notAString);
     }
 
     /**
@@ -88,19 +94,26 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider excerptAndLimitProvider
+     * @dataProvider limitCharsProvider
      */
-    public function testLimitReturnsExpectedNumberOfCharacters($to, $from, $limit)
-    {
-        $this->assertTextLimited($to, $from, $limit);
-    }
-
-    /**
-     * @dataProvider excerptEndingAndLimitProvider
-     */
-    public function testLimitReturnsExpectedEnding($to, $from, $ending, $limit)
+    public function testLimitCharsReturnsExpected($to, $from, $ending, $limit)
     {
         $this->excerpt->setEnding($ending);
-        $this->assertTextLimited($to, $from, $limit);
+        $this->excerpt->setLimit($limit);
+        $limited = $this->excerpt->limitChars($from);
+        $this->assertInternalType('string', $limited);
+        $this->assertEquals($to, $limited);
+    }
+
+       /**
+     * @dataProvider limitWordProvider
+     */
+    public function testLimitWordReturnsExpected($to, $from, $ending, $limit)
+    {
+        $this->excerpt->setEnding($ending);
+        $this->excerpt->setLimit($limit);
+        $limited = $this->excerpt->limitWords($from);
+        $this->assertInternalType('string', $limited);
+        $this->assertEquals($to, $limited);
     }
 }   

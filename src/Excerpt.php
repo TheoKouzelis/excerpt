@@ -5,9 +5,13 @@ class Excerpt
     protected $ending = "";
     protected $limit = 0;
 
-    protected function isLimitLessThanTextLength($text)
+    protected function isLimitLessThanCharCount($text)
     {
         return ($this->limit > 0 && $this->limit < strlen($text));
+    }
+    protected function isLimitLessThanWordCount($text)
+    {
+        return ($this->limit > 0 && $this->limit < str_word_count($text));
     }
 
     protected function isWholeNumber($number)
@@ -15,14 +19,26 @@ class Excerpt
         return (is_numeric($number) && floor($number) == $number); 
     }
 
-    public function limit($text)
+    public function limitChars($text)
     {
-        if (!is_string($text)) {
-            throw new \InvalidArgumentException("Text must be a string");
-        }
+        $this->validateText($text);
+        $text = $this->sanitizeText($text);
 
-        if ($this->isLimitLessThanTextLength($text)) {
+        if ($this->isLimitLessThanCharCount($text)) {
             return trim(substr($text, 0, $this->limit)) . $this->ending;
+        } else {
+            return $text;
+        }
+    }
+
+    public function limitWords($text)
+    {
+        $this->validateText($text);
+        $text = $this->sanitizeText($text);
+
+        if ($this->isLimitLessThanWordCount($text)) {
+            $words = explode(" ",$text);
+            return implode(" ",array_splice($words,0,$this->limit)) . $this->ending;
         } else {
             return $text;
         }
@@ -44,5 +60,20 @@ class Excerpt
         }
 
         $this->limit = $limit; 
+    }
+
+    protected function sanitizeText($text)
+    {
+        $text = trim($text);
+        $text = preg_replace('/\s+/', ' ',$text);
+
+        return $text;
+    }
+
+    protected function validateText($text)
+    {
+        if (!is_string($text)) {
+            throw new \InvalidArgumentException("Text must be a string");
+        }
     }
 }
