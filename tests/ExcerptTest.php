@@ -19,7 +19,7 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function notNumericProvider()
+    public function notANumericProvider()
     {
         return array( 
             array(1.1),
@@ -33,33 +33,40 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
     public function excerptAndLimitProvider()
     {
         return array(
-            array("This excerpt", "This excerpt", 0),
-            array("This excerpt", "This excerpt", "0"),
-            array("T", "This excerpt", 1),
-            array("T", "This excerpt", "1"),
+            array("", "", 0),
+            array("No limit", "No limit", 0),
+            array("No limit", "No limit", "0"),
+            array("L", "Limit to 1 Character", 1),
+            array("L", "Limit to 1 Character", "1"),
+            array("Limit exceeds text", "Limit exceeds text", 100),
+        );
+    }
+    
+    public function excerptEndingAndLimitProvider()
+    {
+        return array(
+            array("No limit", "No limit", "...", 0),
+            array("Limit exceeds text", "Limit exceeds text", "...", 100),
+            array("L...", "Limit to 1 Character", "...", 1),
+            array("Limit...", "Limit ends on white space also remove", "...", 6),
         );
     }
 
     public function assertTextLimited($to, $from, $limit)
     {
-        $this->excerpt->setText($from);
-        $limited = $this->excerpt->limit($limit);
-        $this->assertEquals($to, $limited);
-    }
-
-    public function testLimitReturnsString()
-    {
-        $limited = $this->excerpt->limit();
+        $this->excerpt->setLimit($limit);
+        $limited = $this->excerpt->limit($from);
         $this->assertInternalType('string', $limited);
+        $this->assertEquals($to, $limited);
     }
 
     /**
      * @dataProvider notAStringProvider
      * @expectedException InvalidArgumentException
      */
-    public function testSetTextThrowsExecptionWhenArgIsNotString($notAString)
+    public function testLimitThrowsExecptionWhenArgIsNotString($notAString)
     {
-        $this->excerpt->setText($notAString);
+        $this->excerpt->limit($notAString);
     }
 
     /**
@@ -72,12 +79,12 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider notNumericProvider
+     * @dataProvider notANumericProvider
      * @expectedException InvalidArgumentException
      */
-    public function testLimitThrowsExceptionWhenArgIsNotNumeric($notNumeric)
+    public function testSetLimitThrowsExceptionWhenArgIsNotNumeric($notNumeric)
     {
-        $this->excerpt->limit($notNumeric);
+        $this->excerpt->setLimit($notNumeric);
     }
 
     /**
@@ -88,12 +95,12 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
         $this->assertTextLimited($to, $from, $limit);
     }
 
-    public function testLimitReturnsExpectedEnding()
+    /**
+     * @dataProvider excerptEndingAndLimitProvider
+     */
+    public function testLimitReturnsExpectedEnding($to, $from, $ending, $limit)
     {
-        $to = "T...";
-        $from = "This excerpt";
-        $limit = 1;
-        $this->excerpt->setEnding('...');
+        $this->excerpt->setEnding($ending);
         $this->assertTextLimited($to, $from, $limit);
     }
 }   
