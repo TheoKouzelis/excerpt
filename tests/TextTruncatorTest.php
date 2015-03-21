@@ -1,10 +1,10 @@
 <?php 
 
-class ExcerptTest extends PHPUnit_Framework_TestCase
+class TextTruncatorTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $this->excerpt = new Kouz\Excerpt();
+        $this->textTruncator = new Kouz\TextTruncator();
     }
 
     public function notAStringProvider()
@@ -63,7 +63,7 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
      */
     public function testLimitCharsThrowsExecptionWhenArgIsNotString($notAString)
     {
-        $this->excerpt->limitChars($notAString);
+        $this->textTruncator->limitChars($notAString);
     }
 
     /**
@@ -72,7 +72,7 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
      */
     public function testLimitWordsThrowsExecptionWhenArgIsNotString($notAString)
     {
-        $this->excerpt->limitWords($notAString);
+        $this->textTruncator->limitWords($notAString);
     }
 
     /**
@@ -81,7 +81,7 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
      */
     public function testSetEndingThrowsExecptionWhenArgIsNotString($notAString)
     {
-        $this->excerpt->setEnding($notAString);
+        $this->textTruncator->setEnding($notAString);
     }
 
     /**
@@ -90,7 +90,7 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
      */
     public function testSetLimitThrowsExceptionWhenArgIsNotNumeric($notNumeric)
     {
-        $this->excerpt->setLimit($notNumeric);
+        $this->textTruncator->setLimit($notNumeric);
     }
 
     /**
@@ -98,9 +98,9 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
      */
     public function testLimitCharsReturnsExpected($to, $from, $ending, $limit)
     {
-        $this->excerpt->setEnding($ending);
-        $this->excerpt->setLimit($limit);
-        $limited = $this->excerpt->limitChars($from);
+        $this->textTruncator->setEnding($ending);
+        $this->textTruncator->setLimit($limit);
+        $limited = $this->textTruncator->limitChars($from);
         $this->assertInternalType('string', $limited);
         $this->assertEquals($to, $limited);
     }
@@ -110,9 +110,9 @@ class ExcerptTest extends PHPUnit_Framework_TestCase
      */
     public function testLimitWordReturnsExpected($to, $from, $ending, $limit)
     {
-        $this->excerpt->setEnding($ending);
-        $this->excerpt->setLimit($limit);
-        $limited = $this->excerpt->limitWords($from);
+        $this->textTruncator->setEnding($ending);
+        $this->textTruncator->setLimit($limit);
+        $limited = $this->textTruncator->limitWords($from);
         $this->assertInternalType('string', $limited);
         $this->assertEquals($to, $limited);
     }

@@ -1,6 +1,6 @@
 <?php namespace Kouz;
 
-class Excerpt
+class TextTruncator
 {
     protected $ending = "";
     protected $limit = 0;
