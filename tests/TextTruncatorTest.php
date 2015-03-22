@@ -1,15 +1,15 @@
-<?php 
+<?php namespace Kouz;
 
-class TextTruncatorTest extends PHPUnit_Framework_TestCase
+class TextTruncatorTest extends \PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $this->textTruncator = new Kouz\TextTruncator();
+        $this->textTruncator = new TextTruncator();
     }
 
     public function notAStringProvider()
     {
-        return array( 
+        return array(
             array(1),
             array(1.1),
             array(true),
@@ -21,7 +21,7 @@ class TextTruncatorTest extends PHPUnit_Framework_TestCase
 
     public function notANumericProvider()
     {
-        return array( 
+        return array(
             array(1.1),
             array(true),
             array(false),
@@ -116,4 +116,4 @@ class TextTruncatorTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('string', $limited);
         $this->assertEquals($to, $limited);
     }
-}   
+}

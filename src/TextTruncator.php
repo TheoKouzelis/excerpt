@@ -16,7 +16,7 @@ class TextTruncator
 
     protected function isWholeNumber($number)
     {
-        return (is_numeric($number) && floor($number) == $number); 
+        return (is_numeric($number) && floor($number) == $number);
     }
 
     public function limitChars($text)
@@ -37,8 +37,8 @@ class TextTruncator
         $text = $this->sanitizeText($text);
 
         if ($this->isLimitLessThanWordCount($text)) {
-            $words = explode(" ",$text);
-            return implode(" ",array_splice($words,0,$this->limit)) . $this->ending;
+            $words = explode(" ", $text);
+            return implode(" ", array_splice($words, 0, $this->limit)) . $this->ending;
         } else {
             return $text;
         }
@@ -59,13 +59,13 @@ class TextTruncator
             throw new \InvalidArgumentException("Limit must be a whole number");
         }
 
-        $this->limit = $limit; 
+        $this->limit = $limit;
     }
 
     protected function sanitizeText($text)
     {
         $text = trim($text);
-        $text = preg_replace('/\s+/', ' ',$text);
+        $text = preg_replace('/\s+/', ' ', $text);
 
         return $text;
     }
